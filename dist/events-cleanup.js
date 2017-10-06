@@ -7,8 +7,8 @@ var LISTENER_METHODS = ['on', 'once', 'addListener', 'prependListener', 'prepend
 /**
  * @param {EventEmitter} emitter
  * @param {Object}       [options={}]
- * @param {string}        [options.removeMethod]
- * @param {string[]}      [options.listenerMethods]
+ * @param {string}         [options.removeMethod]
+ * @param {string[]}       [options.listenerMethods]
  *
  * @return {EventEmitter} - Proxied event emitter
  */
