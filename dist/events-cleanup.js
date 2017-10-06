@@ -20,20 +20,19 @@ module.exports = function (emitter) {
 
     var events = [];
 
+    // remove method should not be set to emitter, it's needed for polyfill
+    emitter[removeMethod] = function (eventName) {
+        events = events.filter(function (event) {
+            if (!eventName || event.eventName === eventName) {
+                emitter.removeListener(event.eventName, event.listener);
+                return false;
+            }
+            return true;
+        });
+    };
+
     return new Proxy(emitter, {
         get: function get(emitter, property) {
-            if (property === removeMethod) {
-                return function (eventName) {
-                    events = events.filter(function (event) {
-                        if (!eventName || event.eventName === eventName) {
-                            emitter.removeListener(event.eventName, event.listener);
-                            return false;
-                        }
-                        return true;
-                    });
-                };
-            }
-
             if (listenerMethods.indexOf(property) !== -1 && emitter[property] instanceof Function) {
                 return function (eventName, listener) {
                     for (var _len = arguments.length, rest = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
