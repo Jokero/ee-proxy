@@ -30,7 +30,7 @@ function wrap(emitter, options={}) {
     proxy.stopListening = function(eventName) {
         events = events.filter(event => {
             if (!eventName || event.eventName === eventName) {
-                emitter.removeListener(name, event.listener);
+                emitter.removeListener(event.eventName, event.listener);
                 return false;
             }
             return true;
