@@ -23,7 +23,7 @@ module.exports = function(emitter, options={}) {
     }
 
     return new Proxy(emitter, {
-        get(emitter, property) {
+        get(emitter, property, proxy) {
             if (property === removeMethod) {
                 return eventName => {
                     events = events.filter(event => {
@@ -33,13 +33,15 @@ module.exports = function(emitter, options={}) {
                         }
                         return true;
                     });
+                    return proxy;
                 };
             }
 
             if (listenerMethods.indexOf(property) !== -1 && emitter[property] instanceof Function && emitter[property].length >= 2) {
                 return (eventName, listener, ...rest) => {
                     events.push({ eventName, listener });
-                    return emitter[property].apply(emitter, [eventName, listener, ...rest]);
+                    emitter[property].apply(emitter, [eventName, listener, ...rest]);
+                    return proxy;
                 };
             }
 

@@ -26,7 +26,7 @@ module.exports = function (emitter) {
     }
 
     return new Proxy(emitter, {
-        get: function get(emitter, property) {
+        get: function get(emitter, property, proxy) {
             if (property === removeMethod) {
                 return function (eventName) {
                     events = events.filter(function (event) {
@@ -36,6 +36,7 @@ module.exports = function (emitter) {
                         }
                         return true;
                     });
+                    return proxy;
                 };
             }
 
@@ -46,7 +47,8 @@ module.exports = function (emitter) {
                     }
 
                     events.push({ eventName: eventName, listener: listener });
-                    return emitter[property].apply(emitter, [eventName, listener].concat(rest));
+                    emitter[property].apply(emitter, [eventName, listener].concat(rest));
+                    return proxy;
                 };
             }
 
