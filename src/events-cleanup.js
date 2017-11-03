@@ -8,6 +8,7 @@ const LISTENER_METHODS = ['on', 'once', 'addListener', 'prependListener', 'prepe
  * @param {Object}       [options={}]
  * @param {string}         [options.removeMethod]
  * @param {string[]}       [options.listenerMethods]
+ * @param {string[]}       [options.fields=[]]
  *
  * @return {EventEmitter} - Proxied event emitter
  */
@@ -21,6 +22,9 @@ module.exports = function(emitter, options={}) {
     if (!emitter[removeMethod]) {
         emitter[removeMethod] = () => {};
     }
+
+    const fieldsForPolyfill = options.fields || [];
+    fieldsForPolyfill.forEach(field => emitter[field] = {});
 
     return new Proxy(emitter, {
         get(emitter, property, proxy) {
