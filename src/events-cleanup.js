@@ -19,12 +19,12 @@ module.exports = function(emitter, options={}) {
     let events = [];
 
     // needed for polyfill, because it should know about all properties at creation time
-    if (!emitter[removeMethod]) {
-        emitter[removeMethod] = () => {};
-    }
-
-    const fieldsForPolyfill = options.fields || [];
-    fieldsForPolyfill.forEach(field => emitter[field] = {});
+    const fieldsForPolyfill = (options.fields || []).concat(removeMethod);
+    fieldsForPolyfill.forEach(field => {
+        if (!emitter[field]) {
+            emitter[field] = {};
+        }
+    });
 
     return new Proxy(emitter, {
         get(emitter, property, proxy) {
