@@ -21,7 +21,7 @@ module.exports = function(emitter, options={}) {
     // needed for polyfill, because it should know about all properties at creation time
     const fieldsForPolyfill = (options.fields || []).concat(removeMethod);
     fieldsForPolyfill.forEach(field => {
-        if (!emitter[field]) {
+        if (!emitter.hasOwnProperty(field)) {
             emitter[field] = {};
         }
     });
