@@ -53,7 +53,7 @@ You can use the module with AMD/CommonJS or just use `window.emitterProxy`.
 ## Overview
 
 `ee-proxy` allows you to easily and safely remove listeners attached to event emitter without touching listeners added in other pieces of code.
-Unlike other similar modules (for example, ([ultron](https://www.npmjs.com/package/ultron)) this one works very seamlessly and allows to call your custom methods on event emitter:
+Unlike other similar modules (for example, [ultron](https://www.npmjs.com/package/ultron)) this one works very seamlessly and allows to call your custom methods on event emitter:
 
 ```js
 const emitterProxy = require('ee-proxy');
