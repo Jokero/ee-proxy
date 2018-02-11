@@ -86,7 +86,7 @@ console.log(game instanceof Game); // true
 
 #### Return value
 
-(EventEmitter) - Proxy object (which is !== original emitter)
+(EventEmitter) - Proxy object (which is `!==` original emitter)
 
 ### Example
 
