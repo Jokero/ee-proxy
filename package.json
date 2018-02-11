@@ -1,6 +1,6 @@
 {
-  "name": "events-cleanup",
-  "description": "Declarative validation with async validators support",
+  "name": "ee-proxy",
+  "description": "Event emitter proxy for easy local listeners cleanup",
   "version": "0.0.1",
   "author": {
     "name": "Dmitry Kirilyuk",
@@ -8,23 +8,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jokero/events-cleanup.git"
+    "url": "https://github.com/Jokero/ee-proxy.git"
   },
   "license": "MIT",
   "keywords": [
     "events",
     "event",
-    "emitter",
     "eventemitter",
+    "emitter",
     "cleanup",
+    "listeners",
     "proxy",
-    "wrapper",
     "ultron"
   ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
-  "main": "./lib/events-cleanup.js",
+  "main": "./lib/ee-proxy.js",
   "files": [
     "dist/",
     "lib/",
@@ -35,12 +35,15 @@
     "babel-cli": "6.22.2",
     "babel-preset-es2015": "6.22.0",
     "browserify": "14.0.0",
-    "uglify-js": "2.7.5"
+    "uglify-js": "2.7.5",
+    "chai": "4.1.2",
+    "mocha": "5.0.0"
   },
   "scripts": {
+    "test": "mocha 'tests/**/*.js'",
     "babelify": "babel src --presets es2015 --out-dir lib",
-    "browserify": "browserify ./lib/events-cleanup.js --standalone eventsCleanup --outfile dist/events-cleanup.js",
-    "minify": "uglifyjs dist/events-cleanup.js --output dist/events-cleanup.min.js",
+    "browserify": "browserify ./lib/ee-proxy.js --standalone emitterProxy --outfile dist/ee-proxy.js",
+    "minify": "uglifyjs dist/ee-proxy.js --output dist/ee-proxy.min.js",
     "build": "npm run babelify && npm run browserify && npm run minify"
   }
 }
