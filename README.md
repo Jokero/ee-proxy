@@ -133,7 +133,7 @@ console.log(user.listenerCount('command')); // 0
 ### Polyfill
 
 Internet Explorer and some other outdated browsers (see [caniuse](https://caniuse.com/#search=proxy)) don't support `Proxy`. In this case you can use [polyfill](https://github.com/GoogleChrome/proxy-polyfill).
-But keep in mind that all emitter properties you will use *must be known at proxy creation time* because polyfill seals an emitter object, preventing new properties from being added to it. But you can workaround it by using `fields` option:
+But keep in mind that all emitter properties you will use **must be known at proxy creation time** because polyfill seals an emitter object, preventing new properties from being added to it. But you can workaround it by using `fields` option:
 
 ```js
 const emitterProxy = require('ee-proxy');
