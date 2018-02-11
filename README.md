@@ -53,7 +53,7 @@ You can use the module with AMD/CommonJS or just use `window.emitterProxy`.
 ## Overview
 
 `ee-proxy` allows you to easily and safely remove listeners attached to event emitter without touching listeners added in other pieces of code.
-Unlike other similar modules (for example, [ultron](https://www.npmjs.com/package/ultron)) this one works very seamlessly and allows to call your custom methods on event emitter:
+Unlike other similar modules (for example, [ultron](https://www.npmjs.com/package/ultron)) this one works seamlessly and allows to call your custom methods on event emitter:
 
 ```js
 const emitterProxy = require('ee-proxy');
@@ -82,7 +82,7 @@ console.log(game instanceof Game); // true
 - `[options]` (Object)
     - `[removeMethod]` (string) - Name of the method for listeners cleanup (default - `stopListening`)
     - `[addListenerMethods]` (string[]) - Methods which are intercepted by `ee-proxy` for keeping attached to emitter listeners (default - `['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'onceAny', 'onAny']`)
-    - `[fields` (string[]) - Option specially for `Proxy` polyfill (see [below](#polyfill))
+    - `[fields]` (string[]) - Option specially for `Proxy` polyfill (see [below](#polyfill))
 
 #### Return value
 
@@ -132,7 +132,7 @@ console.log(user.listenerCount('command')); // 0
 
 ### Polyfill
 
-Internet Explorer and some other outdated browsers (see [caniuse](https://caniuse.com/#search=proxy)) don't support `Proxy`. In this case you can use [polyfill](https://github.com/GoogleChrome/proxy-polyfill).
+Internet Explorer and some other outdated browsers don't support `Proxy` (see [caniuse](https://caniuse.com/#search=proxy)). In this case you can use [polyfill](https://github.com/GoogleChrome/proxy-polyfill).
 But keep in mind that all emitter properties you will use **must be known at proxy creation time** because polyfill seals an emitter object, preventing new properties from being added to it. But you can workaround it by using `fields` option:
 
 ```js
