@@ -82,7 +82,7 @@ console.log(game instanceof Game); // true
 - `[options]` (Object)
     - `[removeMethod]` (string) - Name of the method for listeners cleanup (default - `stopListening`)
     - `[addListenerMethods]` (string[]) - Methods which are intercepted by `ee-proxy` for keeping attached to emitter listeners (default - `['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'onceAny', 'onAny']`)
-    - `[fields` (string[]) - Option specially for `Proxy` polyfill (see below)
+    - `[fields` (string[]) - Option specially for `Proxy` polyfill (see [below](#polyfill))
 
 #### Return value
 
