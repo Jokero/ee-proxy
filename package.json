@@ -1,7 +1,7 @@
 {
   "name": "ee-proxy",
   "description": "Event emitter proxy for easy local listeners cleanup",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Dmitry Kirilyuk",
     "email": "gk.joker@gmail.com"
