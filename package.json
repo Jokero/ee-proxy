@@ -28,6 +28,7 @@
   "files": [
     "dist/",
     "lib/",
+    "examples/",
     "LICENSE",
     "README.md"
   ],
@@ -45,5 +46,6 @@
     "browserify": "browserify ./lib/ee-proxy.js --standalone emitterProxy --outfile dist/ee-proxy.js",
     "minify": "uglifyjs dist/ee-proxy.js --output dist/ee-proxy.min.js",
     "build": "npm run babelify && npm run browserify && npm run minify"
-  }
+  },
+  "runkitExampleFilename": "examples/index.js"
 }
