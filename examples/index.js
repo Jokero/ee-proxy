@@ -11,8 +11,8 @@ class Game {
     }
 
     start() {
-        this._user.on('message', () => console.log('message', message));
-        this._user.on('command', () => console.log('command', message));
+        this._user.on('message', message => console.log('message', message));
+        this._user.on('command', command => console.log('command', command));
     }
 
     _onUserLeft() {
@@ -24,14 +24,6 @@ class Game {
 const game = new Game(user);
 game.start();
 
-console.log(user.listenerCount('disconnect')); // 1
-console.log(user.listenerCount('cancel')); // 1
-console.log(user.listenerCount('message')); // 1
-console.log(user.listenerCount('command')); // 1
-
+console.log(user.eventNames());
 user.emit('cancel');
-
-console.log(user.listenerCount('disconnect')); // 1
-console.log(user.listenerCount('cancel')); // 0
-console.log(user.listenerCount('message')); // 0
-console.log(user.listenerCount('command')); // 0
+console.log(user.eventNames());

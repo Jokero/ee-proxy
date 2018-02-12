@@ -104,8 +104,8 @@ class Game {
     }
 
     start() {
-        this._user.on('message', () => console.log('message', message));
-        this._user.on('command', () => console.log('command', message));
+        this._user.on('message', message => console.log('message', message));
+        this._user.on('command', command => console.log('command', command));
     }
 
     _onUserLeft() {
