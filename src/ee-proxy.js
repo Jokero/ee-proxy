@@ -61,7 +61,7 @@ module.exports = function(emitter, options={}) {
                 return (eventName, userListener, ...rest) => {
                     const realListener = !stopListeningAfterFirstEvent ? userListener : function(...args) {
                         stopListening();
-                        return userListener(...args);
+                        return userListener.call(this, ...args);
                     };
 
                     eventListeners.push({ eventName, userListener, realListener });
