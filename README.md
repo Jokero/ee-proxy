@@ -97,37 +97,42 @@ const emitterProxy = require('ee-proxy');
 const user = new EventEmitter();
 user.once('disconnect', () => console.log('User disconnected'));
 
-class Game {
+class Game extends EventEmitter {
     constructor(user) {
+        super();
         this._user = emitterProxy(user);
-        this._user.once('cancel', () => this._onUserLeft());
+        this._user.once('game:cancel', () => this._onUserLeft());
+        this._user.once('disconnect', () => this._onUserLeft());
     }
 
     start() {
-        this._user.on('message', message => console.log('message', message));
-        this._user.on('command', command => console.log('command', command));
+        this._user.on('game:message', message => console.log('message', message));
+        this._user.on('game:command', command => console.log('command', command));
     }
 
     _onUserLeft() {
         console.log('User left the game');
-        this._user.stopListening(); // removes only game listeners (for "message" and "command" events)
+        this._user.stopListening(); // removes only game listeners ("game:message" and "game:command" events)
+        this.emit('canceled');
     }
 }
 
 const game = new Game(user);
 game.start();
 
-console.log(user.listenerCount('disconnect')); // 1
-console.log(user.listenerCount('cancel')); // 1
-console.log(user.listenerCount('message')); // 1
-console.log(user.listenerCount('command')); // 1
+console.log(user.listenerCount('disconnect')); // 2
+console.log(user.listenerCount('game:cancel')); // 1
+console.log(user.listenerCount('game:message')); // 1
+console.log(user.listenerCount('game:command')); // 1
 
-user.emit('cancel');
+user.emit('game:cancel');
 
-console.log(user.listenerCount('disconnect')); // 1
-console.log(user.listenerCount('cancel')); // 0
-console.log(user.listenerCount('message')); // 0
-console.log(user.listenerCount('command')); // 0
+game.once('canceled', () => {
+    console.log(user.listenerCount('disconnect')); // 1
+    console.log(user.listenerCount('game:cancel')); // 0
+    console.log(user.listenerCount('game:message')); // 0
+    console.log(user.listenerCount('game:command')); // 0
+});
 ```
 
 ### Polyfill
