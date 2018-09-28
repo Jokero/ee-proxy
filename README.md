@@ -125,14 +125,14 @@ console.log(user.listenerCount('game:cancel')); // 1
 console.log(user.listenerCount('game:message')); // 1
 console.log(user.listenerCount('game:command')); // 1
 
-user.emit('game:cancel');
-
 game.once('canceled', () => {
     console.log(user.listenerCount('disconnect')); // 1
     console.log(user.listenerCount('game:cancel')); // 0
     console.log(user.listenerCount('game:message')); // 0
     console.log(user.listenerCount('game:command')); // 0
 });
+
+user.emit('game:cancel');
 ```
 
 ### Polyfill

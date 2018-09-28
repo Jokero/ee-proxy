@@ -36,13 +36,13 @@ describe('ee-proxy', function() {
         expect(user.listenerCount('game:message')).to.equal(1);
         expect(user.listenerCount('game:command')).to.equal(1);
 
-        user.emit('game:cancel');
-
         game.once('canceled', () => {
             expect(user.listenerCount('disconnect')).to.equal(1);
             expect(user.listenerCount('game:cancel')).to.equal(0);
             expect(user.listenerCount('game:message')).to.equal(0);
             expect(user.listenerCount('game:command')).to.equal(0);
         });
+
+        user.emit('game:cancel');
     });
 });
