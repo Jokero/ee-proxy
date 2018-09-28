@@ -10,6 +10,7 @@ var REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners'];
 /**
  * @param {EventEmitter} emitter
  * @param {Object}       [options={}]
+ * @param {boolean}        [options.stopListeningAfterFirstEvent]
  * @param {string}         [options.removeMethod]
  * @param {string[]}       [options.addListenerMethods]
  * @param {string[]}       [options.removeListenerMethods]
@@ -24,6 +25,7 @@ module.exports = function (emitter) {
     var addListenerMethods = options.addListenerMethods || ADD_LISTENER_METHODS;
     var removeListenerMethods = options.removeListenerMethods || REMOVE_LISTENER_METHODS;
     var polyfillFields = options.fields || [];
+    var stopListeningAfterFirstEvent = options.hasOwnProperty('stopListeningAfterFirstEvent') ? options.stopListeningAfterFirstEvent : false;
 
     // needed for polyfill, because it should know about all properties at creation time
     var fieldsForPolyfill = [].concat(_toConsumableArray(polyfillFields), [removeMethod]);
@@ -34,16 +36,16 @@ module.exports = function (emitter) {
     });
 
     /**
-     * @type {{ eventName: string, listener: Function }[]}
+     * @type {{ eventName: string, userListener: Function, realListener: Function }[]}
      */
-    var events = [];
+    var eventListeners = [];
 
     var stopListening = function stopListening() {
         var eventName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
-        events = events.filter(function (event) {
-            if (!eventName || event.eventName === eventName) {
-                emitter.removeListener(event.eventName, event.listener);
+        eventListeners = eventListeners.filter(function (listener) {
+            if (!eventName || listener.eventName === eventName) {
+                emitter.removeListener(listener.eventName, listener.realListener);
                 return false;
             }
             return true;
@@ -59,28 +61,39 @@ module.exports = function (emitter) {
                 };
             }
 
-            if (addListenerMethods.indexOf(property) !== -1 && emitter[property] instanceof Function && emitter[property].length >= 2) {
-                return function (eventName, listener) {
+            if (addListenerMethods.includes(property) && emitter[property] instanceof Function && emitter[property].length >= 2) {
+                return function (eventName, userListener) {
                     for (var _len = arguments.length, rest = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
                         rest[_key - 2] = arguments[_key];
                     }
 
-                    events.push({ eventName: eventName, listener: listener });
-                    emitter[property].apply(emitter, [eventName, listener].concat(rest));
+                    var realListener = !stopListeningAfterFirstEvent ? userListener : function () {
+                        stopListening();
+                        return userListener.apply(undefined, arguments);
+                    };
+
+                    eventListeners.push({ eventName: eventName, userListener: userListener, realListener: realListener });
+                    emitter[property].apply(emitter, [eventName, realListener].concat(rest));
                     return proxy;
                 };
             }
 
-            if (removeListenerMethods.indexOf(property) !== -1 && emitter[property] instanceof Function) {
-                return function (eventName, listener) {
+            if (removeListenerMethods.includes(property) && emitter[property] instanceof Function) {
+                return function (eventName, userListener) {
                     for (var _len2 = arguments.length, rest = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
                         rest[_key2 - 2] = arguments[_key2];
                     }
 
-                    events = events.filter(function (event) {
-                        return event.eventName !== eventName || listener && event.listener !== listener;
+                    var eventListener = eventListeners.find(function (listener) {
+                        return listener.userListener === userListener;
                     });
-                    emitter[property].apply(emitter, [eventName, listener].concat(rest));
+                    var realListener = eventListener ? eventListener.realListener : userListener;
+
+                    eventListeners = eventListeners.filter(function (listener) {
+                        return listener.eventName !== eventName || userListener && listener.userListener !== userListener;
+                    });
+
+                    emitter[property].apply(emitter, [eventName, realListener].concat(rest));
                     return proxy;
                 };
             }

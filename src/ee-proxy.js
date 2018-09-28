@@ -7,6 +7,7 @@ const REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners'];
 /**
  * @param {EventEmitter} emitter
  * @param {Object}       [options={}]
+ * @param {boolean}        [options.stopListeningAfterFirstEvent]
  * @param {string}         [options.removeMethod]
  * @param {string[]}       [options.addListenerMethods]
  * @param {string[]}       [options.removeListenerMethods]
@@ -19,6 +20,9 @@ module.exports = function(emitter, options={}) {
     const addListenerMethods = options.addListenerMethods || ADD_LISTENER_METHODS;
     const removeListenerMethods = options.removeListenerMethods || REMOVE_LISTENER_METHODS;
     const polyfillFields = options.fields || [];
+    const stopListeningAfterFirstEvent = options.hasOwnProperty('stopListeningAfterFirstEvent')
+        ? options.stopListeningAfterFirstEvent
+        : false;
 
     // needed for polyfill, because it should know about all properties at creation time
     const fieldsForPolyfill = [...polyfillFields, removeMethod];
@@ -29,14 +33,14 @@ module.exports = function(emitter, options={}) {
     });
 
     /**
-     * @type {{ eventName: string, listener: Function }[]}
+     * @type {{ eventName: string, userListener: Function, realListener: Function }[]}
      */
-    let events = [];
+    let eventListeners = [];
 
     const stopListening = function(eventName = '') {
-        events = events.filter(event => {
-            if (!eventName || event.eventName === eventName) {
-                emitter.removeListener(event.eventName, event.listener);
+        eventListeners = eventListeners.filter(listener => {
+            if (!eventName || listener.eventName === eventName) {
+                emitter.removeListener(listener.eventName, listener.realListener);
                 return false;
             }
             return true;
@@ -52,21 +56,30 @@ module.exports = function(emitter, options={}) {
                 };
             }
 
-            if (addListenerMethods.indexOf(property) !== -1
+            if (addListenerMethods.includes(property)
                 && emitter[property] instanceof Function && emitter[property].length >= 2) {
-                return (eventName, listener, ...rest) => {
-                    events.push({ eventName, listener });
-                    emitter[property].apply(emitter, [eventName, listener, ...rest]);
+                return (eventName, userListener, ...rest) => {
+                    const realListener = !stopListeningAfterFirstEvent ? userListener : function(...args) {
+                        stopListening();
+                        return userListener(...args);
+                    };
+
+                    eventListeners.push({ eventName, userListener, realListener });
+                    emitter[property].apply(emitter, [eventName, realListener, ...rest]);
                     return proxy;
                 };
             }
 
-            if (removeListenerMethods.indexOf(property) !== -1 && emitter[property] instanceof Function) {
-                return (eventName, listener, ...rest) => {
-                    events = events.filter(event =>
-                        event.eventName !== eventName || (listener && event.listener !== listener)
+            if (removeListenerMethods.includes(property) && emitter[property] instanceof Function) {
+                return (eventName, userListener, ...rest) => {
+                    const eventListener = eventListeners.find(listener => listener.userListener === userListener);
+                    const realListener = eventListener ? eventListener.realListener : userListener;
+
+                    eventListeners = eventListeners.filter(listener =>
+                        listener.eventName !== eventName || (userListener && listener.userListener !== userListener)
                     );
-                    emitter[property].apply(emitter, [eventName, listener, ...rest]);
+
+                    emitter[property].apply(emitter, [eventName, realListener, ...rest]);
                     return proxy;
                 };
             }

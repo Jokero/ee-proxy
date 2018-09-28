@@ -5,7 +5,7 @@ Event emitter proxy for easy local listeners cleanup
 [![NPM version](https://img.shields.io/npm/v/ee-proxy.svg)](https://npmjs.org/package/ee-proxy)
 [![Build status](https://img.shields.io/travis/Jokero/ee-proxy.svg)](https://travis-ci.org/Jokero/ee-proxy)
 
-**Note:** This module works in browsers and Node.js >= 6.0. Use `Proxy` polyfill for Internet Explorer
+**Note:** This module works in browsers and Node.js >= 6.0. Use `Proxy` and `Array` polyfills for Internet Explorer
 
 ## Table of Contents
 
@@ -80,6 +80,7 @@ console.log(game instanceof Game); // true
 
 - `emitter` (EventEmitter)
 - `[options]` (Object)
+    - `[stopListeningAfterFirstEvent]` (boolean) - If `true` then `ee-proxy` removes all attached to wrapped emitter listeners after first triggered event (might be useful in some cases)
     - `[removeMethod]` (string) - Name of the method for listeners cleanup (default - `stopListening`)
     - `[addListenerMethods]` (string[]) - Methods which are intercepted by `ee-proxy` for keeping attached to emitter listeners (default - `['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'onceAny', 'onAny']`)
     - `[fields]` (string[]) - Option specially for `Proxy` polyfill (see [below](#polyfill))
@@ -88,7 +89,9 @@ console.log(game instanceof Game); // true
 
 (EventEmitter) - Proxy object (which is `!==` original emitter)
 
-### Example
+### Examples
+
+#### Basic example
 
 ```js
 const EventEmitter = require('events');
@@ -133,6 +136,28 @@ game.once('canceled', () => {
 });
 
 user.emit('game:cancel');
+```
+
+#### Using of "stopListeningAfterFirstEvent" option
+
+Sometimes you may need to listen to several events and you want to react only on first one.
+For example, your user can have a choice: to start the game, to cancel it or the user can even disconnect.
+In that case you can call `stopListening()` in every event listener but it's much easier just to set `stopListeningAfterFirstEvent=true`:
+
+```js
+const user = new EventEmitter();
+user.once('disconnect', () => console.log('User disconnected'));
+
+const wrappedUser = emitterProxy(user, { stopListeningAfterFirstEvent: true });
+wrappedUser.once('game:start', () => console.log('User is ready to start the game'));
+wrappedUser.once('game:cancel', () => console.log('User cancelled the game'));
+wrappedUser.once('disconnect', () => console.log('User disconnected'));
+
+user.emit('game:cancel');
+
+console.log(user.listenerCount('disconnect')); // 1
+console.log(user.listenerCount('game:start')); // 0
+console.log(user.listenerCount('game:cancel')); // 0
 ```
 
 ### Polyfill

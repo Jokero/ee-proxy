@@ -1,7 +1,7 @@
 'use strict';
 
 const EventEmitter = require('events');
-const emitterProxy = require('..');
+const emitterProxy = require('../lib/ee-proxy');
 const expect = require('chai').expect;
 
 describe('ee-proxy', function() {
@@ -44,5 +44,34 @@ describe('ee-proxy', function() {
         });
 
         user.emit('game:cancel');
+    });
+
+    it('does not prevent removing of already existent listener', function() {
+        const user = new EventEmitter();
+
+        const messageListener = () => {};
+        user.on('message', messageListener);
+
+        const wrappedUser = emitterProxy(user);
+
+        expect(user.listenerCount('message')).to.equal(1);
+        wrappedUser.removeListener('message', messageListener);
+        expect(user.listenerCount('message')).to.equal(0);
+    });
+
+    it('stops listening of all events when stopListeningAfterFirstEvent=true', function() {
+        const user = new EventEmitter();
+        user.once('disconnect', () => {});
+
+        const wrappedUser = emitterProxy(user, { stopListeningAfterFirstEvent: true });
+        wrappedUser.once('game:start', () => {});
+        wrappedUser.once('game:cancel', () => {});
+        wrappedUser.once('disconnect', () => {});
+
+        user.emit('game:cancel');
+
+        expect(user.listenerCount('disconnect')).to.equal(1);
+        expect(user.listenerCount('game:start')).to.equal(0);
+        expect(user.listenerCount('game:cancel')).to.equal(0);
     });
 });
