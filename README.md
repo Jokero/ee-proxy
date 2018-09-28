@@ -80,7 +80,7 @@ console.log(game instanceof Game); // true
 
 - `emitter` (EventEmitter)
 - `[options]` (Object)
-    - `[stopListeningAfterFirstEvent]` (boolean) - If `true` then `ee-proxy` removes all attached to wrapped emitter listeners after first triggered event (might be useful in some cases)
+    - `[stopListeningAfterFirstEvent]` (boolean) - If `true`, `ee-proxy` removes all listeners attached to the wrapped emitter when first event is triggered (might be useful in some cases)
     - `[removeMethod]` (string) - Name of the method for listeners cleanup (default - `stopListening`)
     - `[addListenerMethods]` (string[]) - Methods which are intercepted by `ee-proxy` for keeping attached to emitter listeners (default - `['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'onceAny', 'onAny']`)
     - `[fields]` (string[]) - Option specially for `Proxy` polyfill (see [below](#polyfill))
