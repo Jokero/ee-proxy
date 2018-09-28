@@ -65,7 +65,7 @@ module.exports = function(emitter, options={}) {
                     };
 
                     eventListeners.push({ eventName, userListener, realListener });
-                    emitter[property].apply(emitter, [eventName, realListener, ...rest]);
+                    emitter[property](eventName, realListener, ...rest);
                     return proxy;
                 };
             }
@@ -79,7 +79,7 @@ module.exports = function(emitter, options={}) {
                         listener.eventName !== eventName || (userListener && listener.userListener !== userListener)
                     );
 
-                    emitter[property].apply(emitter, [eventName, realListener, ...rest]);
+                    emitter[property](eventName, realListener, ...rest);
                     return proxy;
                 };
             }
