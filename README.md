@@ -109,8 +109,8 @@ class Game extends EventEmitter {
     }
 
     start() {
-        this._user.on('game:message', message => console.log('message', message));
-        this._user.on('game:command', command => console.log('command', command));
+        this._user.on('game:message', message => console.log('game:message', message));
+        this._user.on('game:command', command => console.log('game:command', command));
     }
 
     _onUserLeft() {
