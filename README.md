@@ -89,6 +89,20 @@ console.log(game instanceof Game); // true
 
 (EventEmitter) - Proxy object (which is `!==` original emitter)
 
+```js
+const user = new EventEmitter();
+user.once('disconnect', () => console.log('User disconnected'));
+
+const wrappedUser = emitterProxy(user);
+wrappedUser.once('game:start', () => console.log('User is ready to start the game'));
+wrappedUser.once('game:cancel', () => console.log('User cancelled the game'));
+wrappedUser.once('disconnect', () => console.log('User disconnected'));
+
+wrappedUser.stopListening(); // removes all attached to the wrapped emitter listeners
+// wrappedUser.stopListening('game:start'); // you can specify a specific event
+// wrappedUser.stopListening('game:start', 'game:cancel'); // or even list several events
+```
+
 ### Examples
 
 #### Basic example

@@ -74,4 +74,17 @@ describe('ee-proxy', function() {
         expect(user.listenerCount('game:start')).to.equal(0);
         expect(user.listenerCount('game:cancel')).to.equal(0);
     });
+
+    it('allows to stop listening of several events at once', function() {
+        const user = new EventEmitter();
+
+        const wrappedUser = emitterProxy(user);
+        wrappedUser.once('game:start', () => {});
+        wrappedUser.once('game:cancel', () => {});
+
+        wrappedUser.stopListening('game:start', 'game:cancel');
+
+        expect(user.listenerCount('game:start')).to.equal(0);
+        expect(user.listenerCount('game:cancel')).to.equal(0);
+    });
 });

@@ -41,10 +41,12 @@ module.exports = function (emitter) {
     var eventListeners = [];
 
     var stopListening = function stopListening() {
-        var eventName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+        for (var _len = arguments.length, eventsNames = Array(_len), _key = 0; _key < _len; _key++) {
+            eventsNames[_key] = arguments[_key];
+        }
 
         eventListeners = eventListeners.filter(function (listener) {
-            if (!eventName || listener.eventName === eventName) {
+            if (!eventsNames.length || eventsNames.includes(listener.eventName)) {
                 emitter.removeListener(listener.eventName, listener.realListener);
                 return false;
             }
@@ -55,23 +57,23 @@ module.exports = function (emitter) {
     return new Proxy(emitter, {
         get: function get(emitter, property, proxy) {
             if (property === removeMethod) {
-                return function (eventName) {
-                    stopListening(eventName);
+                return function () {
+                    stopListening.apply(undefined, arguments);
                     return proxy;
                 };
             }
 
             if (addListenerMethods.includes(property) && emitter[property] instanceof Function && emitter[property].length >= 2) {
                 return function (eventName, userListener) {
-                    for (var _len = arguments.length, rest = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-                        rest[_key - 2] = arguments[_key];
+                    for (var _len2 = arguments.length, rest = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+                        rest[_key2 - 2] = arguments[_key2];
                     }
 
                     var realListener = !stopListeningAfterFirstEvent ? userListener : function () {
                         stopListening();
 
-                        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                            args[_key2] = arguments[_key2];
+                        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+                            args[_key3] = arguments[_key3];
                         }
 
                         return userListener.call.apply(userListener, [this].concat(args));
@@ -85,8 +87,8 @@ module.exports = function (emitter) {
 
             if (removeListenerMethods.includes(property) && emitter[property] instanceof Function) {
                 return function (eventName, userListener) {
-                    for (var _len3 = arguments.length, rest = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-                        rest[_key3 - 2] = arguments[_key3];
+                    for (var _len4 = arguments.length, rest = Array(_len4 > 2 ? _len4 - 2 : 0), _key4 = 2; _key4 < _len4; _key4++) {
+                        rest[_key4 - 2] = arguments[_key4];
                     }
 
                     var eventListener = eventListeners.find(function (listener) {

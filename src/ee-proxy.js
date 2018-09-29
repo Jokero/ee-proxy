@@ -37,9 +37,9 @@ module.exports = function(emitter, options={}) {
      */
     let eventListeners = [];
 
-    const stopListening = function(eventName = '') {
+    const stopListening = function(...eventsNames) {
         eventListeners = eventListeners.filter(listener => {
-            if (!eventName || listener.eventName === eventName) {
+            if (!eventsNames.length || eventsNames.includes(listener.eventName)) {
                 emitter.removeListener(listener.eventName, listener.realListener);
                 return false;
             }
@@ -50,8 +50,8 @@ module.exports = function(emitter, options={}) {
     return new Proxy(emitter, {
         get(emitter, property, proxy) {
             if (property === removeMethod) {
-                return eventName => {
-                    stopListening(eventName);
+                return (...eventsNames) => {
+                    stopListening(...eventsNames);
                     return proxy;
                 };
             }
