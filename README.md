@@ -101,7 +101,7 @@ wrappedUser.once('disconnect', () => console.log('User disconnected'));
 wrappedUser.stopListening(); // removes all attached to the wrapped emitter listeners
 console.log(user.listenerCount('disconnect')); // 1
 
-// wrappedUser.stopListening('game:start'); // you can specify a specific event
+// wrappedUser.stopListening('game:start'); // you can specify a particular event
 // wrappedUser.stopListening('game:start', 'game:cancel'); // or even list several events
 ```
 
