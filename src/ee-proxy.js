@@ -59,9 +59,9 @@ module.exports = function(emitter, options={}) {
             if (addListenerMethods.includes(property)
                 && emitter[property] instanceof Function && emitter[property].length >= 2) {
                 return (eventName, userListener, ...rest) => {
-                    const realListener = !stopListeningAfterFirstEvent ? userListener : function(...args) {
+                    const realListener = !stopListeningAfterFirstEvent ? userListener.bind(proxy) : function(...args) {
                         stopListening();
-                        return userListener.call(this, ...args);
+                        return userListener.call(proxy, ...args);
                     };
 
                     eventListeners.push({ eventName, userListener, realListener });

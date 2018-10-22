@@ -87,4 +87,15 @@ describe('ee-proxy', function() {
         expect(user.listenerCount('game:start')).to.equal(0);
         expect(user.listenerCount('game:cancel')).to.equal(0);
     });
+
+    it('sets "this" value of called listener to the proxy instance', function() {
+        const user = new EventEmitter();
+        const wrappedUser = emitterProxy(user);
+
+        wrappedUser.once('game:start', function() {
+            expect(this).to.equal(wrappedUser);
+        });
+
+        wrappedUser.emit('game:start');
+    });
 });
