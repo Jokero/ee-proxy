@@ -61,9 +61,7 @@ module.exports = function(emitter, options={}) {
             }
 
             if (property === 'emitterLog') {
-                return () => {
-                    console.log('eventListeners', JSON.stringify(eventListeners));
-                };
+                return eventListeners;
             }
 
             if (addListenerMethods.includes(property)
