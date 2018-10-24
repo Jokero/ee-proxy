@@ -56,6 +56,10 @@ module.exports = function(emitter, options={}) {
                 };
             }
 
+            if (property === 'emitter') {
+                return emitter;
+            }
+
             if (addListenerMethods.includes(property)
                 && emitter[property] instanceof Function && emitter[property].length >= 2) {
                 return (eventName, userListener, ...rest) => {

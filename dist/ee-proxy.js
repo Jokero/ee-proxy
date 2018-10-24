@@ -63,6 +63,10 @@ module.exports = function (emitter) {
                 };
             }
 
+            if (property === 'emitter') {
+                return emitter;
+            }
+
             if (addListenerMethods.includes(property) && emitter[property] instanceof Function && emitter[property].length >= 2) {
                 return function (eventName, userListener) {
                     for (var _len2 = arguments.length, rest = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
