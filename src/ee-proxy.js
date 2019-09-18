@@ -1,8 +1,8 @@
 'use strict';
 
 const REMOVE_METHOD = 'stopListening';
-const ADD_LISTENER_METHODS = ['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'onceAny', 'onAny'];
-const REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners'];
+const ADD_LISTENER_METHODS = ['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'addEventListener', 'onceAny', 'onAny'];
+const REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners', 'removeEventListener'];
 
 /**
  * @param {EventEmitter} emitter
