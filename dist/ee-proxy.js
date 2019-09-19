@@ -6,6 +6,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var REMOVE_METHOD = 'stopListening';
 var ADD_LISTENER_METHODS = ['on', 'once', 'addListener', 'prependListener', 'prependOnceListener', 'addEventListener', 'onceAny', 'onAny'];
 var REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners', 'removeEventListener'];
+var REMOVE_ONE_LISTENER_METHODS = ['removeListener', 'removeEventListener', 'off'];
 
 /**
  * @param {EventEmitter} emitter
@@ -14,6 +15,7 @@ var REMOVE_LISTENER_METHODS = ['off', 'removeListener', 'removeAllListeners', 'r
  * @param {string}         [options.removeMethod]
  * @param {string[]}       [options.addListenerMethods]
  * @param {string[]}       [options.removeListenerMethods]
+ * @param {string}         [options.removeOneListenerMethod]
  * @param {string[]}       [options.fields=[]]
  *
  * @return {EventEmitter} - Proxied event emitter
@@ -26,6 +28,9 @@ module.exports = function (emitter) {
     var removeListenerMethods = options.removeListenerMethods || REMOVE_LISTENER_METHODS;
     var polyfillFields = options.fields || [];
     var stopListeningAfterFirstEvent = options.hasOwnProperty('stopListeningAfterFirstEvent') ? options.stopListeningAfterFirstEvent : false;
+    var removeOneListenerMethod = options.removeOneListenerMethod || REMOVE_ONE_LISTENER_METHODS.find(function (method) {
+        return emitter[method] instanceof Function;
+    });
 
     // needed for polyfill, because it should know about all properties at creation time
     var fieldsForPolyfill = [].concat(_toConsumableArray(polyfillFields), [removeMethod]);
@@ -47,7 +52,7 @@ module.exports = function (emitter) {
 
         eventListeners = eventListeners.filter(function (listener) {
             if (!eventsNames.length || eventsNames.includes(listener.eventName)) {
-                emitter.removeListener(listener.eventName, listener.realListener);
+                emitter[removeOneListenerMethod](listener.eventName, listener.realListener);
                 return false;
             }
             return true;
@@ -103,6 +108,10 @@ module.exports = function (emitter) {
                     emitter[property].apply(emitter, [eventName, realListener].concat(rest));
                     return proxy;
                 };
+            }
+
+            if (emitter[property] instanceof Function) {
+                return emitter[property].bind(emitter);
             }
 
             return emitter[property];
