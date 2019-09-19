@@ -74,6 +74,9 @@ module.exports = function(emitter, options={}) {
                 };
             }
 
+            /**
+             * todo: is this really needed? In case of using "once", listeners won't be deleted for example
+             */
             if (removeListenerMethods.includes(property) && emitter[property] instanceof Function) {
                 return (eventName, userListener, ...rest) => {
                     const eventListener = eventListeners.find(listener => listener.userListener === userListener);
