@@ -192,7 +192,7 @@ class Game extends EventEmitter {
 }
 
 const game = emitterProxy(new Game(), {
-    fields: 'something'
+    fields: ['something']
 });
 game.something = '123456';
 ```
